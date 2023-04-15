@@ -125,39 +125,56 @@ def gerar_certificado(request, id):
     path_fonte = os.path.join(settings.BASE_DIR, 'templates/static/fontes/arimo.ttf')
 
     for participante in evento.participantes.all():
-        # TO DO: validar se o certificado já foi gerado
-        img = Image.open(path_template)
-        draw = ImageDraw.Draw(img)
+        certificado = Certificado.objects.filter(evento=evento)
 
-        fonte_nome = ImageFont.truetype(path_fonte, 80)
-        fonte_info = ImageFont.truetype(path_fonte, 30)
+        if not certificado:
+            img = Image.open(path_template)
+            draw = ImageDraw.Draw(img)
 
-        draw.text((230, 651), f"{participante.username}", font=fonte_nome, fill=(0,0,0))
-        draw.text((761, 782), f"{evento.nome}", font=fonte_info, fill=(0, 0, 0))
-        draw.text((816, 849), f"{evento.carga_horaria}", font=fonte_info, fill=(0, 0, 0))
+            fonte_nome = ImageFont.truetype(path_fonte, 80)
+            fonte_info = ImageFont.truetype(path_fonte, 30)
 
-        output = BytesIO()
-        img.save(output, format="PNG", quality=100)
-        output.seek(0)
+            draw.text((230, 651), f"{participante.username}", font=fonte_nome, fill=(0,0,0))
+            draw.text((761, 782), f"{evento.nome}", font=fonte_info, fill=(0, 0, 0))
+            draw.text((816, 849), f"{evento.carga_horaria}", font=fonte_info, fill=(0, 0, 0))
 
-        img_final = InMemoryUploadedFile(output,
-                                         'ImageField',
-                                         f'{token_urlsafe(8)}.png',
-                                         'image/jpeg',
-                                         sys.getsizeof(output),
-                                         None)
+            output = BytesIO()
+            img.save(output, format="PNG", quality=100)
+            output.seek(0)
 
-        certificado_gerado = Certificado(
-            certificado=img_final,
-            participante=participante,
-            evento=evento
-        )
+            img_final = InMemoryUploadedFile(output,
+                                             'ImageField',
+                                             f'{token_urlsafe(8)}.png',
+                                             'image/jpeg',
+                                             sys.getsizeof(output),
+                                             None)
 
-        certificado_gerado.save()
+            certificado_gerado = Certificado(
+                certificado=img_final,
+                participante=participante,
+                evento=evento
+            )
 
-    messages.add_message(request, constants.SUCCESS, 'Certificados gerados com sucesso !!!')
-    return redirect(reverse('certificados_evento', kwargs={'id': evento.id}))
+            certificado_gerado.save()
 
+            messages.add_message(request, constants.SUCCESS, 'Certificados gerados com sucesso !!!')
+            return redirect(reverse('certificados_evento', kwargs={'id': evento.id, 'certificado': certificado}))
+        else:
+            messages.add_message(request, constants.WARNING, 'Certificados desse evento já foram emitidos')
+            return redirect(reverse('certificados_evento', kwargs={'id': evento.id, 'certificado': certificado}))
+
+
+@login_required
+def procurar_certificado(request, id):
+    evento = get_object_or_404(Evento, id=id)
+    if not evento.criador == request.user:
+        raise Http404('Esse evento não é seu')
+    email = request.POST.get('email')
+    certificado = Certificado.objects.filter(evento=evento).filter(participante__email=email).first()
+    if not certificado:
+        messages.add_message(request, constants.WARNING, 'Certificado não encontrado')
+        return redirect(reverse('certificados_evento', kwargs={'id': evento.id}))
+    return redirect(certificado.certificado.url)
 
 
 

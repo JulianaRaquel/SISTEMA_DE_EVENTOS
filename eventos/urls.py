@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import novo_evento, gerenciar_evento, inscrever_evento, participantes_evento, gerar_csv, certificados_evento, gerar_certificado
+from .views import novo_evento, gerenciar_evento, inscrever_evento, participantes_evento, gerar_csv, certificados_evento, gerar_certificado, procurar_certificado
 
 
 
@@ -11,4 +11,5 @@ urlpatterns = [
     path('gerar_csv/<int:id>', gerar_csv, name='gerar_csv'),
     path('certificados_evento/<int:id>', certificados_evento, name="certificados_evento"),
     path('gerar_certificado/<int:id>', gerar_certificado, name='gerar_certificado'),
+    path('procurar_certificado/<int:id>/', procurar_certificado, name="procurar_certificado"),
 ]

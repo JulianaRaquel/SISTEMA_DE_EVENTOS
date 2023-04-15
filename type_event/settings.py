@@ -1,18 +1,19 @@
 import os
 from pathlib import Path
 from django.contrib.messages import constants
-
+from decouple import config, Csv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ht@c#wy05(jz#c8j)m87m2zs54c#&@^@f5thmtkva$2t4gz+bv'
+# Chave Secreta
+SECRET_KEY = config('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG deve ser True no ambiente de desenvolvimento e False no ambiente de produção
+DEBUG = config('DEBUG', cast=bool)
 
-ALLOWED_HOSTS = ['*']
+# Hosts Permitidos
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
 
 # Aplicações do Projeto
@@ -26,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'usuarios',
     'eventos',
+    'clientes',
 ]
 
 MIDDLEWARE = [
@@ -70,8 +72,7 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
+# Validação de Senhas
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -117,6 +118,7 @@ MEDIA_URL = '/media/'
 # Default primary key field type
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 # Mensagens
 MESSAGE_TAGS = {

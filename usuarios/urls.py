@@ -3,6 +3,7 @@ from .views import cadastro, login
 
 
 urlpatterns = [
+    path('', cadastro),
     path('cadastro/', cadastro, name='cadastro'),
     path('login/', login, name='login'),
 ]

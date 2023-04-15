@@ -3,6 +3,8 @@ from django.contrib import messages
 from django.contrib.messages import constants
 from django.contrib.auth.models import User, auth
 from django.urls import reverse
+
+
 def cadastro(request):
     if request.method == 'GET':
         return render(request, 'cadastro.html')

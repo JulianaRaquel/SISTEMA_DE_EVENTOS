@@ -1,0 +1,23 @@
+{% extends "bases/base_evento.html" %}
+{% load static %}
+
+{% block 'conteudo' %}
+
+<div class="container">
+    <br>
+    <br>
+    <h1>Seus Eventos</h1>
+    <br>
+    <div class="row">
+        {% for e in eventos %}
+            <div class="container" style="border: 3px solid lightgreen; padding: 30px; border-radius: 30px;">
+                <h5>Evento: {{ e.nome }}</h5>
+                <h5>Início: {{ e.data_inicio }}</h5>
+                <h5>Término: {{ e.data_termino }}</h5>
+                <h5>Carga Horária: {{ e.carga_horaria }} hrs</h5>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
